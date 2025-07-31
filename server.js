@@ -19,7 +19,7 @@ const pingStats = {};
 let currentTracerouteProcess = null;
 
 function getPingOnceCommand(ip) {
-  const isWindows = process.platform === 'win32';
+  const isWindows = process.platform === "win32";
   return isWindows ? `ping -n 1 ${ip}` : `ping -c 1 ${ip}`;
 }
 
@@ -30,6 +30,10 @@ app.post("/ping-once", (req, res) => {
   const command = getPingOnceCommand(ip);
 
   exec(command, (error, stdout, stderr) => {
+    console.log("Command:", command);
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
+    console.log("error:", error);
     if (error) {
       return res.status(500).json({ error: stderr || error.message });
     }
@@ -241,7 +245,6 @@ app.get("/stop-traceroute", (req, res) => {
     res.send({ status: "no process running" });
   }
 });
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
