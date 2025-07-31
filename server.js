@@ -16,54 +16,34 @@ app.use(bodyParser.json());
 
 let pingProcesses = {};
 const pingStats = {};
+const fetch = require("node-fetch");
 let currentTracerouteProcess = null;
 
-// function getPingOnceCommand(ip) {
-//   const isWindows = process.platform === "win32";
-//   return isWindows ? `ping -n 1 ${ip}` : `ping -c 1 ${ip}`;
-// }
+function getPingOnceCommand(ip) {
+  const isWindows = process.platform === "win32";
+  return isWindows ? `ping -n 1 ${ip}` : `ping -c 1 ${ip}`;
+}
 
-// app.post("/ping-once", (req, res) => {
-//   const ip = req.body.ip;
-//   if (!ip) return res.status(400).json({ error: "IP address is required" });
-
-//   const command = getPingOnceCommand(ip);
-
-//   exec(command, (error, stdout, stderr) => {
-//     console.log("Command:", command);
-//     console.log("stdout:", stdout);
-//     console.log("stderr:", stderr);
-//     console.log("error:", error);
-//     if (error) {
-//       return res.status(500).json({ error: stderr || error.message });
-//     }
-
-//     res.send(stdout);
-//   });
-// });
-
-// Install node-fetch if not already
-// npm install node-fetch
-const fetch = require("node-fetch");
-
-app.post("/ping-once", async (req, res) => {
+app.post("/ping-once", (req, res) => {
   const ip = req.body.ip;
   if (!ip) return res.status(400).json({ error: "IP address is required" });
 
-  console.log("Command:", command);
-  console.log("stdout:", stdout);
-  console.log("stderr:", stderr);
-  console.log("error:", error);
-  try {
-    const response = await fetch(`http://${ip}`, {
-      method: "GET",
-      timeout: 3000,
-    });
-    return res.send(`Host ${ip} is reachable with status ${response.status}`);
-  } catch (err) {
-    return res.status(500).json({ error: `Host unreachable: ${err.message}` });
-  }
+  const command = getPingOnceCommand(ip);
+
+  exec(command, (error, stdout, stderr) => {
+    console.log("Command:", command);
+    console.log("stdout:", stdout);
+    console.log("stderr:", stderr);
+    console.log("error:", error);
+    if (error) {
+      return res.status(500).json({ error: stderr || error.message });
+    }
+
+    res.send(stdout);
+  });
 });
+
+
 
 app.get("/ping-stream", (req, res) => {
   const ip = req.query.ip;
