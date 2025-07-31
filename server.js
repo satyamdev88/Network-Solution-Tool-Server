@@ -5,6 +5,8 @@ const { exec } = require("child_process");
 const { spawn } = require("child_process");
 const net = require("net");
 const dgram = require("dgram");
+const ping = require("ping");
+const fetch = require("node-fetch");
 
 const app = express();
 // const port = 3000;
@@ -16,7 +18,6 @@ app.use(bodyParser.json());
 
 let pingProcesses = {};
 const pingStats = {};
-const fetch = require("node-fetch");
 let currentTracerouteProcess = null;
 
 function getPingOnceCommand(ip) {
@@ -24,24 +25,21 @@ function getPingOnceCommand(ip) {
   return isWindows ? `ping -n 1 ${ip}` : `ping -c 1 ${ip}`;
 }
 
-app.post("/ping-once", (req, res) => {
+
+app.post("/ping-once", async (req, res) => {
   const ip = req.body.ip;
-  if (!ip) return res.status(400).json({ error: "IP address is required" });
+  if (!ip) {
+    return res.status(400).json({ error: "IP address is required" });
+  }
 
-  const command = getPingOnceCommand(ip);
-
-  exec(command, (error, stdout, stderr) => {
-    console.log("Command:", command);
-    console.log("stdout:", stdout);
-    console.log("stderr:", stderr);
-    console.log("error:", error);
-    if (error) {
-      return res.status(500).json({ error: stderr || error.message });
-    }
-
-    res.send(stdout);
-  });
+  try {
+    const result = await ping.promise.probe(ip);
+    res.json(result); // returns result.alive, time, host etc.
+  } catch (error) {
+    res.status(500).json({ error: "Ping failed", detail: error.message });
+  }
 });
+
 
 
 
