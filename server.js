@@ -50,8 +50,15 @@ app.post("/ping-once", async (req, res) => {
   const ip = req.body.ip;
   if (!ip) return res.status(400).json({ error: "IP address is required" });
 
+  console.log("Command:", command);
+  console.log("stdout:", stdout);
+  console.log("stderr:", stderr);
+  console.log("error:", error);
   try {
-    const response = await fetch(`http://${ip}`, { method: "GET", timeout: 3000 });
+    const response = await fetch(`http://${ip}`, {
+      method: "GET",
+      timeout: 3000,
+    });
     return res.send(`Host ${ip} is reachable with status ${response.status}`);
   } catch (err) {
     return res.status(500).json({ error: `Host unreachable: ${err.message}` });
