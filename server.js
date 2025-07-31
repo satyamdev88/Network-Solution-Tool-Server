@@ -19,12 +19,8 @@ const pingStats = {};
 let currentTracerouteProcess = null;
 
 function getPingOnceCommand(ip) {
-  const platform = process.platform;
-  if (platform === "win32") {
-    return `ping ${ip}`;
-  } else {
-    return `ping -c 4 ${ip}`;
-  }
+  const isWindows = process.platform === 'win32';
+  return isWindows ? `ping -n 1 ${ip}` : `ping -c 1 ${ip}`;
 }
 
 app.post("/ping-once", (req, res) => {
