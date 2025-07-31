@@ -7,7 +7,7 @@ const net = require("net");
 const dgram = require("dgram");
 
 const app = express();
-const port = 3000;
+// const port = 3000;
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
@@ -246,6 +246,6 @@ app.get("/stop-traceroute", (req, res) => {
 });
 
 
-app.listen(port, () => {
+app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
